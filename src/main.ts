@@ -8,4 +8,4 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   </div>
 `
 
-new PixelLoad(document.querySelector('#rabbit-image')!, { pixelSize: 10, fps: 100, rowIncrement: 3, colIncrement: 4 })
+new PixelLoad(document.querySelector('#rabbit-image')!, { pixelSize: 10, fps: 40, rowIncrement: 4, colIncrement: 10 })

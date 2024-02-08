@@ -1,3 +1,5 @@
+import Pixel from "./pixel" 
+
 interface Options {
   fps?: number
   pixelSize?:number
@@ -8,11 +10,12 @@ interface Options {
 
 class PixelLoad {
   container:HTMLDivElement;
+  imgEl:HTMLImageElement;
   options:Options;
   totalCol:number = 10;
   totalRow:number = 10;
-  currentCol:number = 1;
-  currentRow:number = 1;
+  currentCol:number = 0;
+  currentRow:number = 0;
 
 
 
@@ -25,7 +28,10 @@ class PixelLoad {
     }
 
     this.container = container;
-    this.container.style.clipPath = `inset(100%)`;
+    this.imgEl = this.container.querySelector('img')!;
+    this.imgEl.style.clipPath = `inset(100%)`;
+    this.imgEl.style.display = `block`;
+    this.container.style.position = 'relative';
     this.options = Object.assign(defaultOptions,o);
 
     const img = new Image();
@@ -41,9 +47,23 @@ class PixelLoad {
     this.totalCol =  this.container.clientWidth / this.options.pixelSize!;
     this.totalRow =  this.container.clientHeight / this.options.pixelSize!;
   
-    //this.container.style.clipPath = `polygon(0 0, 100% 0, 100% 98%, 96% 98%, 96% 100%, 0 100%)`;
+    //this.batchAppend();
     this.calculations();
     this.animate();
+  }
+
+  batchAppend = () => {
+
+    const fragment = document.createDocumentFragment();
+
+    for(let i = 0; i < this.totalRow; i++) {
+      for(let c = 0; c < this.totalCol; c++) {
+        let pixel = new Pixel(this.container,this.container.clientWidth,this.container.clientHeight,this.container.dataset.src || '',this.options.pixelSize!,c * this.options.pixelSize!, i * this.options.pixelSize!);
+        fragment.appendChild(pixel.el);
+      }
+    }
+
+    this.container.append(fragment);
   }
 
   calculations = () => {
@@ -51,12 +71,11 @@ class PixelLoad {
       const colPos = this.currentCol * this.options.pixelSize!;
       const rowPos = this.currentRow * this.options.pixelSize!;
       if(this.currentRow === 1) {
-        this.container.style.clipPath = `polygon(0 0, ${colPos}px 0, ${colPos}px ${rowPos}px, 0 ${rowPos}px)`;
+        this.imgEl.style.clipPath = `polygon(0 0, ${colPos}px 0, ${colPos}px ${rowPos}px, 0 ${rowPos}px)`;
       } else {
-        this.container.style.clipPath = `polygon(0 0, 100% 0, 100% ${rowPos - this.options.pixelSize!}px, ${colPos}px ${rowPos - this.options.pixelSize!}px, ${colPos}px ${rowPos}px, 0 ${rowPos}px)`;
+        this.imgEl.style.clipPath = `polygon(0 0, 100% 0, 100% ${rowPos - this.options.pixelSize!}px, ${colPos}px ${rowPos - this.options.pixelSize!}px, ${colPos}px ${rowPos}px, 0 ${rowPos}px)`;
       }
       
-
       if(this.currentCol >= this.totalCol) {
         this.currentCol = 0;
         this.currentRow = this.currentRow + this.options.rowIncrement!;

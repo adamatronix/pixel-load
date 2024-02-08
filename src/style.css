@@ -59,6 +59,7 @@ h1 {
   width: 100%;
   max-width: 700px;
   position: relative;
+  display: block;
 }
 
 .card {
